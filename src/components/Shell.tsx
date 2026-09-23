@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation } from "react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Server } from "lucide-react";
 import { NAV, navForPath } from "@/lib/nav";
-import { Orb } from "@/components/Orb";
 import { NebulaBackground } from "@/components/NebulaBackground";
 import { useNow } from "@/hooks/useNow";
 import { fmtClock, relTime } from "@/lib/time";
@@ -33,18 +32,47 @@ function LiveDot({ flash }: { flash: boolean }) {
   return (
     <span className="relative inline-flex h-2 w-2">
       <span
-        className={`absolute inline-flex h-full w-full rounded-full ${
-          flash ? "bg-ember-400" : "bg-peri-400"
-        }`}
-        style={{ animation: "pulse-dot 2.8s ease-in-out infinite", opacity: flash ? 1 : 0.55 }}
+        className="absolute inline-flex h-full w-full rounded-full bg-ember-400"
+        style={{ animation: "pulse-dot 2.8s ease-in-out infinite", opacity: flash ? 1 : 0.45 }}
       />
       <span
         className={`relative inline-flex h-2 w-2 rounded-full transition-colors duration-state ease-state ${
-          flash ? "bg-ember-400" : "bg-peri-400/80"
+          flash ? "bg-ember-500" : "bg-ember-400/60"
         }`}
         style={flash ? { animation: "event-flash 600ms ease-out" } : undefined}
       />
     </span>
+  );
+}
+
+/** Brand orb mark — pure SVG so it renders identically everywhere (the
+ *  34px WebGL orb could fail to a blank/white tile on some GPU stacks). */
+function BrandMark({ size = 34 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label="RUBRIC++ orb mark">
+      <defs>
+        <radialGradient id="bm-core" cx="46%" cy="42%" r="62%">
+          <stop offset="0%" stopColor="#EAF9F3" />
+          <stop offset="18%" stopColor="#8B9CF9" />
+          <stop offset="52%" stopColor="#6D5AE0" />
+          <stop offset="82%" stopColor="#151129" />
+          <stop offset="100%" stopColor="#07071A" />
+        </radialGradient>
+        <linearGradient id="bm-rim" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#8B9CF9" stopOpacity=".9" />
+          <stop offset="55%" stopColor="#6D5AE0" stopOpacity=".35" />
+          <stop offset="100%" stopColor="#FF6B4A" stopOpacity=".55" />
+        </linearGradient>
+      </defs>
+      {/* atmosphere */}
+      <circle cx="24" cy="24" r="21" fill="#6D5AE0" opacity=".14" />
+      {/* body */}
+      <circle cx="24" cy="24" r="15" fill="url(#bm-core)" />
+      {/* fresnel rim, warming toward lower-right */}
+      <circle cx="24" cy="24" r="15" fill="none" stroke="url(#bm-rim)" strokeWidth="1.4" />
+      {/* core bloom */}
+      <circle cx="21" cy="20" r="3.2" fill="#EAF9F3" opacity=".95" />
+    </svg>
   );
 }
 
@@ -85,7 +113,7 @@ export function Shell() {
         className="fixed inset-y-0 left-0 z-40 flex w-[232px] flex-col border-r border-hi/[.06] bg-void-900/55 backdrop-blur-[22px]"
       >
         <div className="flex items-center gap-3 px-5 pb-6 pt-6">
-          <Orb size={34} state="idle" seedKey="rubric-brand" title="RUBRIC++ orb mark" />
+          <BrandMark size={34} />
           <div>
             <div className="font-display text-[15px] font-semibold tracking-wide">RUBRIC++</div>
             <div className="micro mt-0.5" style={{ fontSize: 10 }}>Agentic OS</div>
@@ -113,7 +141,7 @@ export function Shell() {
                       {({ isActive }) => (
                         <>
                           {isActive && (
-                            <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-peri-400 shadow-[0_0_8px_rgb(var(--peri-400)/.8)]" />
+                            <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-ember-400 shadow-[0_0_8px_rgb(var(--ember-400)/.8)]" />
                           )}
                           <item.icon size={16} strokeWidth={1.8} className="shrink-0" aria-hidden />
                           <span className="flex-1 truncate">{item.label}</span>

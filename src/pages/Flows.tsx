@@ -144,7 +144,7 @@ export default function Flows() {
                   if (playing) { setPlaying(false); setCursor(run.events.length); }
                   else { setCursor(0); setPlaying(true); }
                 }}
-                className="glass glass-sm lift press flex items-center gap-2 px-3.5 py-1.5 text-[13px] text-lav-200"
+                className="cta-ember press flex items-center gap-2 rounded-[10px] px-3.5 py-1.5 text-[13px]"
               >
                 {playing ? <Square size={13} aria-hidden /> : <Play size={13} aria-hidden />}
                 {playing ? "Stop" : "Playback"}

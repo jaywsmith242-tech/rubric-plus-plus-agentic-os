@@ -2,10 +2,12 @@ import type { LucideIcon } from "lucide-react";
 import type { AgentStatus } from "@/types/data";
 import type { OrbState } from "@/components/Orb";
 
-/** Agent status → orb state (velocity = meaning). */
+/** Agent status → orb state (velocity = meaning).
+ *  running maps to "acting": directional streak + ember rim at 15% blend —
+ *  the warm signature of an agent mid-task. */
 export function agentOrbState(status: AgentStatus): OrbState {
   switch (status) {
-    case "running": return "thinking";
+    case "running": return "acting";
     case "offline": return "offline";
     case "active": return "idle";
     case "idle": return "idle";

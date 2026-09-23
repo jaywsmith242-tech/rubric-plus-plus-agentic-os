@@ -14,7 +14,7 @@ import type { AgentStatus } from "@/types/data";
 
 const STATUS_META: Record<AgentStatus, { icon: LucideIcon; label: string; tone: "ok" | "warn" | "bad" | "peri" | "lo" | "ember" }> = {
   active: { icon: Zap, label: "active", tone: "ok" },
-  running: { icon: Activity, label: "running", tone: "peri" },
+  running: { icon: Activity, label: "running", tone: "ember" },
   idle: { icon: Moon, label: "idle", tone: "lo" },
   offline: { icon: WifiOff, label: "offline", tone: "lo" },
 };
@@ -153,11 +153,15 @@ export default function Board() {
         </h1>
 
         <div className="mt-8 flex max-w-[560px] flex-wrap items-center justify-center gap-2.5">
-          {CHIPS.map((c) => (
+          {CHIPS.map((c, i) => (
             <Link
               key={c.label}
               to={c.to}
-              className="glass glass-sm lift press px-3.5 py-1.5 text-[13px] text-lo hover:text-hi"
+              className={
+                i === 0
+                  ? "cta-ember press rounded-[10px] px-3.5 py-1.5 text-[13px]"
+                  : "glass glass-sm lift press px-3.5 py-1.5 text-[13px] text-lo hover:text-hi"
+              }
             >
               {c.label}
             </Link>
@@ -181,14 +185,14 @@ export default function Board() {
               </div>
               <div
                 className={`tnum mt-3 whitespace-nowrap font-display font-medium text-hi ${
-                  t.small ? "text-[32px] leading-[44px]" : "text-[44px] leading-[44px]"
+                  t.small ? "text-warm-grad text-[32px] leading-[44px]" : "text-[44px] leading-[44px]"
                 }`}
               >
                 {t.value}
               </div>
               <div className="mt-2 flex items-end justify-between gap-2">
                 <span className="truncate text-[12px] leading-[16px] text-lo">{t.caption}</span>
-                {t.spark && <Sparkline values={t.spark} width={88} height={26} />}
+                {t.spark && <Sparkline values={t.spark} width={88} height={26} endDot={t.small} />}
               </div>
             </Link>
           ))}
@@ -198,7 +202,7 @@ export default function Board() {
         <div className="glass glass-lg mt-4 p-5">
           <div className="mb-4 flex items-baseline justify-between">
             <span className="micro">Swarm</span>
-            <Link to="/agents" className="text-[12px] text-peri-400 hover:text-lav-200 transition-colors duration-hover">
+            <Link to="/agents" className="tlink text-[12px]">
               Open roster →
             </Link>
           </div>

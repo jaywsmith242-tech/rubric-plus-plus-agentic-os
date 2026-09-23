@@ -83,8 +83,8 @@
     overflow-x: hidden;
   }
   ::selection {
-    background: rgb(var(--violet-500) / 0.45);
-    color: rgb(var(--core-050));
+    background: rgb(var(--ember-400) / 0.8);
+    color: rgb(var(--void-950));
   }
   /* quiet scrollbar */
   ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -94,7 +94,7 @@
     border-radius: 10px;
     border: 3px solid rgb(var(--void-950));
   }
-  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--violet-500) / .6); }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--ember-400) / .65); }
   :focus-visible {
     outline: 1px solid rgb(var(--peri-400));
     outline-offset: 2px;
@@ -140,6 +140,42 @@
     letter-spacing: .12em;
     color: rgb(var(--text-lo));
   }
+
+  /* Primary CTA — the ONE warm moment per view.
+     1px gradient border cross-graded violet → #D18AE5 → ember (never a
+     muddy direct blend); ember inner glow on hover. Text stays text-hi. */
+  .cta-ember {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(180deg, rgba(21,17,41,.72), rgba(12,8,20,.78)) padding-box,
+      linear-gradient(115deg, rgb(var(--violet-500)) 0%, #D18AE5 48%, rgb(var(--ember-400)) 100%) border-box;
+    color: rgb(var(--text-hi));
+    transition: box-shadow var(--dur-hover) var(--ease-hover),
+                transform var(--dur-hover) var(--ease-hover),
+                filter var(--dur-hover) var(--ease-hover);
+  }
+  .cta-ember:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 0 18px rgb(var(--ember-400) / .14),
+      0 0 22px rgb(var(--ember-400) / .18),
+      0 0 60px rgb(var(--violet-500) / .12);
+  }
+
+  /* warm gradient numerals — text-hi → #FFB08C from 35%, still tabular */
+  .text-warm-grad {
+    background: linear-gradient(115deg, rgb(var(--text-hi)) 35%, #FFB08C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* text links cross-fade peri → ember on hover */
+  .tlink {
+    color: rgb(var(--peri-400));
+    transition: color var(--dur-hover) var(--ease-hover);
+  }
+  .tlink:hover { color: rgb(var(--ember-400)); }
 
   .tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
 
@@ -230,8 +266,8 @@
 .doc-body h3 { font-size: 19px; line-height: 26px; font-weight: 500; }
 .doc-body h4 { font-size: 16px; line-height: 24px; font-weight: 500; }
 .doc-body p { margin: .8em 0; }
-.doc-body a { color: rgb(var(--peri-400)); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgb(var(--peri-400) / .4); }
-.doc-body a:hover { text-decoration-color: rgb(var(--peri-400)); }
+.doc-body a { color: rgb(var(--peri-400)); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgb(var(--peri-400) / .4); transition: color var(--dur-hover) var(--ease-hover), text-decoration-color var(--dur-hover) var(--ease-hover); }
+.doc-body a:hover { color: rgb(var(--ember-400)); text-decoration-color: rgb(var(--ember-400) / .6); }
 .doc-body code {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: .86em;

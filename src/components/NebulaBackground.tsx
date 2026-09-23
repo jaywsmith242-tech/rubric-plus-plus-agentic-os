@@ -20,6 +20,7 @@ out vec4 fragColor;
 vec3 VOID   = vec3(0.0275, 0.0275, 0.1020); // #07071A
 vec3 VIOLET = vec3(0.4275, 0.3529, 0.8784); // #6D5AE0
 vec3 PERI   = vec3(0.5451, 0.6118, 0.9765); // #8B9CF9
+vec3 EMBER  = vec3(1.0, 0.4196, 0.2902);    // #FF6B4A
 
 float hash(vec2 p){
   p = fract(p * vec2(234.34, 435.345));
@@ -77,6 +78,12 @@ void main(){
   col += PERI * wisps * neb * 0.30;
   // brighter core pockets — restrained: atmosphere, not screensaver
   col += PERI * pow(max(f - 0.55, 0.0), 2.0) * 0.35 * shimmer;
+
+  // faint warm counterpoint — a low ember wisp on the lower-right horizon,
+  // breathing with the shimmer; atmosphere, never a second focal point
+  vec2 wp = (uv - vec2(0.80, 0.14)) * vec2(uRes.x / uRes.y, 1.0);
+  float wisp = exp(-dot(wp, wp) * 3.4) * (0.55 + 0.45 * fbm(p * 2.1 + r * 0.8));
+  col += EMBER * wisp * 0.045 * shimmer;
 
   // vignette
   float vig = smoothstep(1.35, 0.35, length((uv - 0.5) * vec2(uRes.x / uRes.y, 1.0) * 1.4));

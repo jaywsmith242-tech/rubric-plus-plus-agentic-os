@@ -6,9 +6,9 @@ import { useNow } from "@/hooks/useNow";
 import { Activity, Moon, WifiOff, Zap, type LucideIcon } from "lucide-react";
 import type { Agent, AgentStatus } from "@/types/data";
 
-const STATUS_META: Record<AgentStatus, { icon: LucideIcon; label: string; tone: "ok" | "peri" | "lo" }> = {
+const STATUS_META: Record<AgentStatus, { icon: LucideIcon; label: string; tone: "ok" | "peri" | "lo" | "ember" }> = {
   active: { icon: Zap, label: "active", tone: "ok" },
-  running: { icon: Activity, label: "running", tone: "peri" },
+  running: { icon: Activity, label: "running", tone: "ember" },
   idle: { icon: Moon, label: "idle", tone: "lo" },
   offline: { icon: WifiOff, label: "offline", tone: "lo" },
 };
