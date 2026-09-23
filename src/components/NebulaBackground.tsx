@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { QUAD_VS, compileProgram, fitCanvas, getGL, makeQuad, rafLoop, reducedMotion } from "@/lib/gl";
+import { QUAD_VS, compileProgram, fitCanvas, getGL, makeQuad, reducedMotion } from "@/lib/gl";
+import { registerDraw } from "@/lib/loop";
 
 /**
  * NebulaBackground — fullscreen WebGL2 FBM domain-warped nebula.
@@ -152,7 +153,7 @@ export function NebulaBackground() {
     } else {
       const onResize = () => draw(performance.now());
       window.addEventListener("resize", onResize);
-      const stopLoop = rafLoop(draw);
+      const stopLoop = registerDraw(draw);
       stop = () => { stopLoop(); window.removeEventListener("resize", onResize); };
     }
 

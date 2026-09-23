@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { linksData } from "@/lib/data";
 import type { Link as LinkItem } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** Links — quiet headers, glass rows, favicon-letter glyphs. Low cinema, high function. */
 
@@ -53,12 +54,15 @@ export default function Links() {
   }, []);
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">Quick links</h1>
         <p className="mt-1 text-[15px] text-lo">The tools and resources your agents reach for.</p>
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <div className="max-w-[860px] space-y-8">
         {groups.map((g) => (
           <section key={g.cat}>
@@ -71,6 +75,7 @@ export default function Links() {
           </section>
         ))}
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

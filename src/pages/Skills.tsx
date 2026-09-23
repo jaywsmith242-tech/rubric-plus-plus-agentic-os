@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ArrowDown, Zap } from "lucide-react";
 import { skillsData } from "@/lib/data";
 import type { Skill, SkillLevel } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** Skill Tree — the ARMS L1→L3 ladder is the default view.
  *  Three tier bands ascending: L1 thin SKILL.md → L2 folder + refs → L3
@@ -49,7 +50,8 @@ export default function Skills() {
   }, []);
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <div className="min-w-0">
           <h1 className="font-display text-[36px] font-semibold leading-[44px]">Skill tree</h1>
@@ -83,7 +85,9 @@ export default function Skills() {
           </figure>
         )}
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_360px]">
         {/* ladder: L3 at top so skills visually ascend */}
         <div className="space-y-4">
@@ -165,6 +169,7 @@ export default function Skills() {
           )}
         </aside>
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

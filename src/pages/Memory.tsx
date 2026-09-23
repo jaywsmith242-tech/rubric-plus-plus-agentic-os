@@ -4,6 +4,7 @@ import { memoryData } from "@/lib/data";
 import { rafLoop, reducedMotion } from "@/lib/gl";
 import { fnv1a } from "@/lib/rng";
 import type { MemoryNodeType } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** Memory Graph — "Second Brain" constellation. Canvas 2D force layout:
  *  pairwise repulsion (K=9000 capped), spring edges (rest 130), weak center
@@ -292,7 +293,8 @@ export default function Memory() {
   }, [nodes, edges, adjacency]);
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-[36px] font-semibold leading-[44px]">Second brain</h1>
@@ -310,7 +312,9 @@ export default function Memory() {
           />
         </label>
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
         <div ref={wrapRef} className="glass glass-lg overflow-hidden">
           <canvas ref={canvasRef} className="block w-full" />
@@ -363,6 +367,7 @@ export default function Memory() {
           </div>
         </aside>
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

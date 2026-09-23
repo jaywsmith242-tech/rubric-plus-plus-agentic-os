@@ -6,26 +6,29 @@ import { NAV, navForPath } from "@/lib/nav";
 import { NebulaBackground } from "@/components/NebulaBackground";
 import { useNow } from "@/hooks/useNow";
 import { fmtClock, relTime } from "@/lib/time";
-import { auditEvents } from "@/lib/data";
+import { currentEvent, subscribeEvents } from "@/lib/live";
+import type { AuditEvent } from "@/types/data";
 
 const BOOT_EASE = [0.23, 1, 0.32, 1] as const;
 
-/** Live audit-log pulse: replays the real events.jsonl stream; each landing
- *  event flashes the orb-dot ember for 600ms, then it settles back to peri. */
+/** Live audit-log pulse: rides the shared 45s event bus so the topbar dot,
+ *  hero orb and swarm field all react to the same event at the same moment. */
 function useLivePulse() {
   const [flash, setFlash] = useState(false);
-  const [idx, setIdx] = useState(auditEvents.length - 1);
-  useEffect(() => {
-    if (auditEvents.length === 0) return;
-    const id = window.setInterval(() => {
-      setIdx((i) => (i + 1) % auditEvents.length);
-      setFlash(true);
-      const t = window.setTimeout(() => setFlash(false), 600);
-      return () => window.clearTimeout(t);
-    }, 45000);
-    return () => window.clearInterval(id);
-  }, []);
-  return { flash, event: auditEvents[idx] };
+  const [event, setEvent] = useState<AuditEvent | null>(currentEvent());
+  const timeout = useRef(0);
+  useEffect(
+    () =>
+      subscribeEvents((e) => {
+        setEvent(e);
+        setFlash(true);
+        window.clearTimeout(timeout.current);
+        timeout.current = window.setTimeout(() => setFlash(false), 600);
+      }),
+    []
+  );
+  useEffect(() => () => window.clearTimeout(timeout.current), []);
+  return { flash, event };
 }
 
 function LiveDot({ flash }: { flash: boolean }) {

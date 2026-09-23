@@ -6,6 +6,7 @@ import { firingsInRange, nextFire } from "@/lib/cron";
 import { countdown, relTime } from "@/lib/time";
 import { useNow } from "@/hooks/useNow";
 import type { Cron } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 function statusMeta(c: Cron): { icon: LucideIcon; label: string; tone: "ok" | "warn" | "bad" | "lo" } {
   if (!c.enabled) return { icon: Ban, label: "disabled", tone: "lo" };
@@ -42,13 +43,16 @@ export default function Crons() {
   const DAY_FMT = new Intl.DateTimeFormat("en", { weekday: "short" });
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">Cron schedule</h1>
         <p className="mt-1 text-[15px] text-lo">Every recurring job in one place.</p>
       </header>
+      </RevealItem>
 
       {/* ── 7-day star chart ── */}
+      <RevealItem>
       <section className="glass glass-lg mb-6 p-5">
         <div className="mb-4 flex items-baseline justify-between">
           <span className="micro">Week view — 7 days from today</span>
@@ -121,8 +125,10 @@ export default function Crons() {
           })}
         </div>
       </section>
+      </RevealItem>
 
       {/* ── table ── */}
+      <RevealItem>
       <section className="glass glass-lg overflow-hidden">
         <table className="w-full text-left text-[13px]">
           <thead>
@@ -172,6 +178,7 @@ export default function Crons() {
           </tbody>
         </table>
       </section>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

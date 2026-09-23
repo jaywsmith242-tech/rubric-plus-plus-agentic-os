@@ -2,6 +2,7 @@ import { CheckCircle2, Eye } from "lucide-react";
 import { Orb } from "@/components/Orb";
 import { sprints, agentById } from "@/lib/data";
 import type { SprintTask } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** Inline orb-chip for `` `(devo)` `` owners. */
 function OwnerChip({ owner }: { owner: string }) {
@@ -42,14 +43,17 @@ function TaskCard({ t, quiet }: { t: SprintTask; quiet?: boolean }) {
 
 export default function Sprints() {
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">{sprints.title}</h1>
         <p className="mt-1 max-w-[72ch] text-[14px] leading-[22px] text-lo">
           Plan the week — agents pull from Backlog top-down. Never delete a task; strike it through if cancelled.
         </p>
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <section>
           <div className="mb-3 flex items-baseline justify-between px-1">
@@ -81,6 +85,7 @@ export default function Sprints() {
           </div>
         </section>
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

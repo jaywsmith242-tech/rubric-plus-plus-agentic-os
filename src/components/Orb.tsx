@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { QUAD_VS, compileProgram, fitCanvas, getGL, makeQuad, rafLoop, reducedMotion } from "@/lib/gl";
+import { QUAD_VS, compileProgram, fitCanvas, getGL, makeQuad, reducedMotion } from "@/lib/gl";
+import { registerDraw } from "@/lib/loop";
 import { fnv1a } from "@/lib/rng";
 
 /**
@@ -50,6 +51,8 @@ uniform float uSeed;
 uniform vec3  uA;       // swirl speed, breathe amp, vortex
 uniform vec3  uB;       // streak, warm rim, desat
 uniform float uDark;    // offline darkness
+uniform vec2  uGaze;    // cursor gaze: swirl/core offset (≤6% of R)
+uniform float uPulse;   // event pulse 0..1: +12% luminance, ember rim tint
 
 vec3 VIOLET = vec3(0.4275, 0.3529, 0.8784); // #6D5AE0
 vec3 PERI   = vec3(0.5451, 0.6118, 0.9765); // #8B9CF9
@@ -83,9 +86,11 @@ float fbm(vec2 p){
 
 void main(){
   vec2 uv = vUv * 2.0 - 1.0;            // -1..1
-  float r = length(uv);
-  float ang = atan(uv.y, uv.x);
   float R = 0.72;                        // silhouette radius
+  float r = length(uv);
+  // gaze: internal energy leans toward the cursor; geometry stays put
+  vec2 guv = uv - uGaze * (0.06 * R);
+  float ang = atan(guv.y, guv.x);
 
   float speed   = uA.x;
   float breathe = uA.y;
@@ -97,11 +102,11 @@ void main(){
   // --- internal swirl: polar FBM, domain-warped, rotating ---
   float rot = uTime * speed + uSeed;
   float ca = cos(rot), sa = sin(rot);
-  vec2 pr = mat2(ca, -sa, sa, ca) * uv;
+  vec2 pr = mat2(ca, -sa, sa, ca) * guv;
 
   // vortex contraction pulse: 4% @ 1.4s when thinking
   float pulse = 1.0 - vortex * 0.04 * (0.5 + 0.5 * sin(uTime * 4.4879));
-  float rr = r * pulse;
+  float rr = length(guv) * pulse;
 
   // log-spiral coordinate for swirl texture
   float spiral = ang + log(rr + 0.06) * (2.0 + 1.4 * vortex);
@@ -128,14 +133,14 @@ void main(){
   // core bloom — brightest pixel in the product
   float coreGlow = exp(-rr * rr * 14.0) * (0.9 + 0.4 * breathe * 8.0 * (0.5 + 0.5 * sin(uTime * 2.2440)));
   interior += CORE * coreGlow * (1.0 - uDark * 0.9);
-  // fresnel rim light (peri; ember at 15% blend when acting)
-  vec3 rimCol = mix(PERI, EMBER, warm);
+  // fresnel rim light (peri; ember at 15% blend when acting, tinted on pulse)
+  vec3 rimCol = mix(PERI, EMBER, max(warm, uPulse * 0.6));
   interior += rimCol * fres * (0.85 - uDark * 0.55);
 
   // desaturate (error) — 70% toward luma, never red-flash
   float luma = dot(interior, vec3(0.299, 0.587, 0.114));
   interior = mix(interior, vec3(luma), desat);
-  interior *= lum * (1.0 - uDark * 0.85);
+  interior *= lum * (1.0 - uDark * 0.85) * (1.0 + 0.12 * uPulse);
 
   // --- silhouette: dark glass rim so the orb sits on any panel ---
   float edge = smoothstep(R, R - 0.035, r);
@@ -152,15 +157,24 @@ void main(){
   fragColor = vec4(col + haloCol, alpha);
 }`;
 
+/** Mutable FX channel for the soul layer: gaze target (normalized -1..1)
+ *  and the timestamp of the last event pulse. Owned by the parent, read and
+ *  eased by the Orb every frame — no React re-renders. */
+export interface OrbFx {
+  gaze: { x: number; y: number };
+  pulseAt: number; // performance.now() of the last event; -Infinity when none
+}
+
 export interface OrbProps {
   state?: OrbState;
   size?: number; // px, 32–240
   seedKey?: string; // stable per-agent seed
   className?: string;
   title?: string;
+  fxRef?: React.MutableRefObject<OrbFx>;
 }
 
-export function Orb({ state = "idle", size = 64, seedKey = "orb", className = "", title }: OrbProps) {
+export function Orb({ state = "idle", size = 64, seedKey = "orb", className = "", title, fxRef }: OrbProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fallback, setFallback] = useState(false);
   // current + target param blocks, tweened over 480ms (state-change token)
@@ -205,10 +219,13 @@ export function Orb({ state = "idle", size = 64, seedKey = "orb", className = ""
     const uA = gl.getUniformLocation(prog, "uA");
     const uB = gl.getUniformLocation(prog, "uB");
     const uDark = gl.getUniformLocation(prog, "uDark");
+    const uGaze = gl.getUniformLocation(prog, "uGaze");
+    const uPulse = gl.getUniformLocation(prog, "uPulse");
 
     const seed = (fnv1a(seedKey) % 1000) / 1000 * 6.2831;
     const reduced = reducedMotion();
     const t0 = performance.now();
+    const gazeCur = { x: 0, y: 0 };
 
     const draw = (nowMs: number) => {
       fitCanvas(canvas, 2);
@@ -228,12 +245,21 @@ export function Orb({ state = "idle", size = 64, seedKey = "orb", className = ""
         desat: L(p.from.desat, p.to.desat),
         dark: L(p.from.dark, p.to.dark),
       };
+      // gaze eases toward the target; event pulse is one 600ms sinusoidal beat
+      const fx = fxRef?.current;
+      const gt = fx ? fx.gaze : { x: 0, y: 0 };
+      gazeCur.x += (gt.x - gazeCur.x) * 0.07;
+      gazeCur.y += (gt.y - gazeCur.y) * 0.07;
+      const pk = fx ? (nowMs - fx.pulseAt) / 600 : 2;
+      const pulse = pk >= 0 && pk < 1 ? Math.sin(Math.PI * pk) : 0;
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform1f(uTime, reduced ? 1.4 : (nowMs - t0) / 1000);
       gl.uniform1f(uSeed, seed);
       gl.uniform3f(uA, p.cur.speed, p.cur.breathe, p.cur.vortex);
       gl.uniform3f(uB, p.cur.streak, p.cur.warm, p.cur.desat);
       gl.uniform1f(uDark, p.cur.dark);
+      gl.uniform2f(uGaze, gazeCur.x, gazeCur.y);
+      gl.uniform1f(uPulse, pulse);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
@@ -243,7 +269,7 @@ export function Orb({ state = "idle", size = 64, seedKey = "orb", className = ""
       const id = window.setInterval(() => draw(performance.now()), 480); // state flips only
       stop = () => window.clearInterval(id);
     } else {
-      stop = rafLoop(draw);
+      stop = registerDraw(draw);
     }
     return () => {
       stop();

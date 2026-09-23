@@ -5,6 +5,7 @@ import { relTime } from "@/lib/time";
 import { useNow } from "@/hooks/useNow";
 import { Activity, Moon, WifiOff, Zap, type LucideIcon } from "lucide-react";
 import type { Agent, AgentStatus } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 const STATUS_META: Record<AgentStatus, { icon: LucideIcon; label: string; tone: "ok" | "peri" | "lo" | "ember" }> = {
   active: { icon: Zap, label: "active", tone: "ok" },
@@ -45,12 +46,15 @@ export default function Agents() {
   const departments = agentsData.agents.filter((a) => a.id !== "robo");
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">Agent team</h1>
         <p className="mt-1 text-[15px] text-lo">Who's active and what they're doing.</p>
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <section>
         <div className="micro mb-4">Orchestrator</div>
         {orchestrator && (
@@ -59,7 +63,9 @@ export default function Agents() {
           </div>
         )}
       </section>
+      </RevealItem>
 
+      <RevealItem>
       <section className="mt-12">
         <div className="micro mb-4">Departments</div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -68,6 +74,7 @@ export default function Agents() {
           ))}
         </div>
       </section>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

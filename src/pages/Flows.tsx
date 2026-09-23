@@ -4,6 +4,7 @@ import { Orb, type OrbState } from "@/components/Orb";
 import { flowsData, agentById } from "@/lib/data";
 import { fmtTime, relTime } from "@/lib/time";
 import type { Flow, FlowRun, StepStatus } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** cumulative latest status per step from an event prefix (append-only log IS the state) */
 function stepStates(run: FlowRun, upto: number): Map<string, StepStatus> {
@@ -98,12 +99,15 @@ export default function Flows() {
   if (!flow || !run) return null;
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">Flow pipelines</h1>
         <p className="mt-1 text-[15px] text-lo">Follow every step your agents take.</p>
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
         {/* flow list */}
         <aside className="space-y-2">
@@ -202,6 +206,7 @@ export default function Flows() {
           </div>
         </div>
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

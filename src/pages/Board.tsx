@@ -1,16 +1,21 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { CalendarClock, Film, Workflow, Users } from "lucide-react";
-import { Orb } from "@/components/Orb";
+import { Orb, type OrbFx } from "@/components/Orb";
 import { Sparkline } from "@/components/Sparkline";
 import { StatusPill, agentOrbState } from "@/components/StatusPill";
-import { agentsData, cronsData, flowsData, generationsData } from "@/lib/data";
+import { SwarmField } from "@/components/SwarmField";
+import { CountUp } from "@/components/CountUp";
+import { Reveal, RevealItem } from "@/components/Reveal";
+import { agentsData, auditEvents, cronsData, flowsData, generationsData } from "@/lib/data";
+import { eventCaption, eventTickerLine, subscribeEvents } from "@/lib/live";
 import { nextFire, firingsInRange } from "@/lib/cron";
 import { countdown, relTime } from "@/lib/time";
 import { useNow } from "@/hooks/useNow";
 import { Activity, Moon, WifiOff, Zap, type LucideIcon } from "lucide-react";
 import type { AgentStatus } from "@/types/data";
+import type { OrbState } from "@/components/Orb";
 
 const STATUS_META: Record<AgentStatus, { icon: LucideIcon; label: string; tone: "ok" | "warn" | "bad" | "peri" | "lo" | "ember" }> = {
   active: { icon: Zap, label: "active", tone: "ok" },
@@ -46,11 +51,90 @@ function perDay(dates: string[], days: number, now: number): number[] {
   return out;
 }
 
+/** Consciousness stream — one-line mono ticker of the real audit trail. */
+function ConsciousnessStream() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [dur, setDur] = useState(60);
+  const text = auditEvents.map(eventTickerLine).join("   ·   ") + "   ·   ";
+  useEffect(() => {
+    const el = trackRef.current;
+    if (el) setDur(Math.max(12, el.scrollWidth / 2 / 30)); // 30px/s
+  }, [text]);
+  return (
+    <div className="ticker-mask mt-6 overflow-hidden" title="The audit trail — events.jsonl, live">
+      <div
+        ref={trackRef}
+        className="ticker-track font-mono text-[12px] text-lo"
+        style={{ animationDuration: `${dur}s` }}
+      >
+        <span>{text}</span>
+        <span aria-hidden>{text}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Board() {
   const now = useNow(1000);
   const [videoOk, setVideoOk] = useState(true);
   // hero orb scale-in is part of the once-per-session boot sequence
   const [bootedOnce] = useState(() => sessionStorage.getItem("rubricpp.booted") === "1");
+
+  // ── soul layer: gaze channel, thought cycle, event pulse ──
+  const heroFx = useRef<OrbFx>({ gaze: { x: 0, y: 0 }, pulseAt: -10000 });
+  const orbWrapRef = useRef<HTMLDivElement>(null);
+  const [heroState, setHeroState] = useState<OrbState>("idle");
+  const [thoughtIdx, setThoughtIdx] = useState(0);
+
+  // autonomous thought cycle: every 18–26s the hero thinks for ~4s,
+  // and the thought line rotates to the next real audit event
+  useEffect(() => {
+    let alive = true;
+    let t1 = 0;
+    let t2 = 0;
+    const schedule = () => {
+      t1 = window.setTimeout(() => {
+        if (!alive) return;
+        setHeroState("thinking");
+        setThoughtIdx((i) => (i + 1) % Math.max(auditEvents.length, 1));
+        t2 = window.setTimeout(() => {
+          if (!alive) return;
+          setHeroState("idle");
+          schedule();
+        }, 4000);
+      }, 18000 + Math.random() * 8000);
+    };
+    schedule();
+    return () => {
+      alive = false;
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, []);
+
+  // event reaction: one ember-tinted luminance pulse (600ms, handled in-shader)
+  useEffect(() => subscribeEvents(() => {
+    heroFx.current.pulseAt = performance.now();
+  }), []);
+
+  // cursor gaze — the agent looks at you (≤400px reach)
+  const onHeroMove = (e: React.PointerEvent) => {
+    const el = orbWrapRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const dx = e.clientX - (r.left + r.width / 2);
+    const dy = e.clientY - (r.top + r.height / 2);
+    const d = Math.hypot(dx, dy);
+    if (d < 400) {
+      const s = Math.min(d / 400, 1);
+      heroFx.current.gaze = { x: (dx / (d || 1)) * s, y: -(dy / (d || 1)) * s };
+    } else {
+      heroFx.current.gaze = { x: 0, y: 0 };
+    }
+  };
+  const onHeroLeave = () => {
+    heroFx.current.gaze = { x: 0, y: 0 };
+  };
 
   const active = agentsData.agents.filter((a) => a.status !== "offline").length;
 
@@ -100,22 +184,23 @@ export default function Board() {
 
   const tiles = [
     {
-      icon: Users, label: "Active agents", value: String(active),
+      icon: Users, label: "Active agents", num: active as number | null,
       caption: `of ${agentsData.agents.length} on roster`, spark: null as number[] | null, to: "/agents",
       small: false,
     },
     {
-      icon: CalendarClock, label: "Next firing", value: nextCron ? countdown(nextCron.at.getTime(), now).replace(/^in /, "") : "—",
+      icon: CalendarClock, label: "Next firing", num: null as number | null,
+      value: nextCron ? countdown(nextCron.at.getTime(), now).replace(/^in /, "") : "—",
       caption: nextCron ? nextCron.name : "no enabled crons", spark: cronSpark, to: "/crons",
       small: true, // countdown strings step down so they never wrap
     },
     {
-      icon: Workflow, label: "Flows today", value: String(flowsToday),
+      icon: Workflow, label: "Flows today", num: flowsToday as number | null,
       caption: "runs started", spark: flowSpark, to: "/flows",
       small: false,
     },
     {
-      icon: Film, label: "Generations", value: String(gensThisWeek),
+      icon: Film, label: "Generations", num: gensThisWeek as number | null,
       caption: "this week", spark: genSpark, to: "/generations",
       small: false,
     },
@@ -123,8 +208,12 @@ export default function Board() {
 
   return (
     <div>
-      {/* ── Zenith: hero — ≥50% emptiness, the void is the luxury ── */}
-      <section className="relative flex min-h-[430px] flex-col items-center justify-center overflow-hidden rounded-[24px]">
+      {/* ── Zenith: hero — the swarm's sky (≥50% void stays sacred) ── */}
+      <section
+        className="relative flex min-h-[430px] flex-col items-center justify-center overflow-hidden rounded-[24px]"
+        onPointerMove={onHeroMove}
+        onPointerLeave={onHeroLeave}
+      >
         {/* ambient video under the shader layer; silently hidden if absent */}
         {videoOk && (
           <video
@@ -135,16 +224,20 @@ export default function Board() {
             aria-hidden
           />
         )}
+        {/* the living swarm — boids flocking in the hero void */}
+        <SwarmField />
+
         <motion.div
+          ref={orbWrapRef}
           initial={bootedOnce ? false : { scale: 1.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
-          className="bloom rounded-full"
+          className="bloom relative z-10 rounded-full"
         >
-          <Orb size={200} state="idle" seedKey="robo" title="Robo — chief of staff" />
+          <Orb size={200} state={heroState} seedKey="robo" title="Robo — chief of staff" fxRef={heroFx} />
         </motion.div>
 
-        <h1 className="mt-10 text-center font-display text-[44px] leading-[48px] tracking-tight">
+        <h1 className="relative z-10 mt-10 text-center font-display text-[44px] leading-[48px] tracking-tight">
           <span className="font-light text-hi/90">Good {greetingWord()}, Chief.</span>
           <br />
           <span className="font-bold text-hi">
@@ -152,7 +245,23 @@ export default function Board() {
           </span>
         </h1>
 
-        <div className="mt-8 flex max-w-[560px] flex-wrap items-center justify-center gap-2.5">
+        {/* thought line — rotates with each autonomous thought cycle */}
+        <div className="relative z-10 mt-3 flex h-[18px] items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={thoughtIdx}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.48, ease: [0.65, 0, 0.35, 1] }}
+              className="font-mono text-[12px] text-lo"
+            >
+              {auditEvents.length > 0 ? `▸ ${eventCaption(auditEvents[thoughtIdx % auditEvents.length])}` : ""}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+
+        <div className="relative z-10 mt-5 flex max-w-[560px] flex-wrap items-center justify-center gap-2.5">
           {CHIPS.map((c, i) => (
             <Link
               key={c.label}
@@ -169,37 +278,42 @@ export default function Board() {
         </div>
       </section>
 
+      {/* consciousness stream — the audit trail, always murmuring */}
+      <ConsciousnessStream />
+
       {/* ── Instruments ── */}
-      <section className="mt-16">
-        <div className="mb-4 flex items-baseline justify-between">
+      <Reveal className="mt-12">
+        <RevealItem className="mb-4 flex items-baseline justify-between">
           <h2 className="font-display text-[17px] font-semibold">Instruments</h2>
           <span className="micro">Who's active and what they're doing</span>
-        </div>
+        </RevealItem>
 
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-          {tiles.map((t) => (
-            <Link key={t.label} to={t.to} className="glass lift block p-5">
-              <div className="flex items-center justify-between">
-                <span className="micro">{t.label}</span>
-                <t.icon size={14} className="text-lo" aria-hidden />
-              </div>
-              <div
-                className={`tnum mt-3 whitespace-nowrap font-display font-medium text-hi ${
-                  t.small ? "text-warm-grad text-[32px] leading-[44px]" : "text-[44px] leading-[44px]"
-                }`}
-              >
-                {t.value}
-              </div>
-              <div className="mt-2 flex items-end justify-between gap-2">
-                <span className="truncate text-[12px] leading-[16px] text-lo">{t.caption}</span>
-                {t.spark && <Sparkline values={t.spark} width={88} height={26} endDot={t.small} />}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <RevealItem>
+          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+            {tiles.map((t) => (
+              <Link key={t.label} to={t.to} className="glass lift block p-5">
+                <div className="flex items-center justify-between">
+                  <span className="micro">{t.label}</span>
+                  <t.icon size={14} className="text-lo" aria-hidden />
+                </div>
+                <div
+                  className={`tnum mt-3 whitespace-nowrap font-display font-medium text-hi ${
+                    t.small ? "text-warm-grad text-[32px] leading-[44px]" : "text-[44px] leading-[44px]"
+                  }`}
+                >
+                  {t.num !== null ? <CountUp value={t.num} /> : t.value}
+                </div>
+                <div className="mt-2 flex items-end justify-between gap-2">
+                  <span className="truncate text-[12px] leading-[16px] text-lo">{t.caption}</span>
+                  {t.spark && <Sparkline values={t.spark} width={88} height={26} endDot={t.small} />}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </RevealItem>
 
         {/* swarm strip — all six agents breathing */}
-        <div className="glass glass-lg mt-4 p-5">
+        <RevealItem className="glass glass-lg mt-4 p-5">
           <div className="mb-4 flex items-baseline justify-between">
             <span className="micro">Swarm</span>
             <Link to="/agents" className="tlink text-[12px]">
@@ -220,8 +334,8 @@ export default function Board() {
               );
             })}
           </div>
-        </div>
-      </section>
+        </RevealItem>
+      </Reveal>
     </div>
   );
 }

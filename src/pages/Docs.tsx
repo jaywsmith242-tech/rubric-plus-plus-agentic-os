@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { FileText } from "lucide-react";
 import { docs } from "@/lib/data";
 import { renderMarkdown } from "@/lib/markdown";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** Docs — the same files your agents load as context. */
 export default function Docs() {
@@ -11,12 +12,15 @@ export default function Docs() {
   const html = useMemo(() => renderMarkdown(current.body), [current]);
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">Docs</h1>
         <p className="mt-1 text-[15px] text-lo">The same files your agents load as context.</p>
       </header>
+      </RevealItem>
 
+      <RevealItem>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-1.5 lg:sticky lg:top-20 lg:self-start">
           {docs.map((d) => (
@@ -40,6 +44,7 @@ export default function Docs() {
           <div className="doc-body max-w-[72ch]" dangerouslySetInnerHTML={{ __html: html }} />
         </article>
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }

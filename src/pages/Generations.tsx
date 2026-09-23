@@ -5,6 +5,7 @@ import { lcg } from "@/lib/rng";
 import { relTime } from "@/lib/time";
 import { useNow } from "@/hooks/useNow";
 import type { Generation } from "@/types/data";
+import { Reveal, RevealItem } from "@/components/Reveal";
 
 /** Seed-derived nebula placeholder — violet family ONLY (hue 230–260°),
  *  never random-hue confetti. Two layered radial blooms + veil. */
@@ -90,18 +91,22 @@ export default function Generations() {
   const newestFirst = [...generationsData.generations].reverse();
 
   return (
-    <div className="pt-10">
+    <Reveal className="pt-10">
+      <RevealItem>
       <header className="mb-10">
         <h1 className="font-display text-[36px] font-semibold leading-[44px]">Generations log</h1>
         <p className="mt-1 text-[15px] text-lo">
           Every image and video the agents shipped — prompt, model, skill, seed.
         </p>
       </header>
+      </RevealItem>
+      <RevealItem>
       <div className="columns-1 gap-4 sm:columns-2 xl:columns-3 2xl:columns-4">
         {newestFirst.map((g) => (
           <GenCard key={g.id} g={g} now={now} />
         ))}
       </div>
-    </div>
+      </RevealItem>
+    </Reveal>
   );
 }
