@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "links": [
+    {
+      "label": "Claude Code docs",
+      "url": "https://docs.anthropic.com/en/docs/claude-code",
+      "category": "agent",
+      "note": "CLI reference, headless flags"
+    },
+    {
+      "label": "RoboNuggets classroom",
+      "url": "https://www.skool.com/robonuggets",
+      "category": "community",
+      "note": "Guides, prompts, masterclass"
+    },
+    {
+      "label": "Generations gallery",
+      "url": "#generations",
+      "category": "micro-app",
+      "note": "All image/video outputs"
+    },
+    {
+      "label": "Second brain",
+      "url": "#memory",
+      "category": "micro-app",
+      "note": "Workspace graph view"
+    },
+    {
+      "label": "Landing pad (Excalidraw)",
+      "url": "https://excalidraw.com",
+      "category": "micro-app",
+      "note": "Reusable Claude-made illustrations"
+    },
+    {
+      "label": "Syncthing",
+      "url": "https://syncthing.net",
+      "category": "infra",
+      "note": "Local ↔ Hermes file sync"
+    },
+    {
+      "label": "YouTube studio",
+      "url": "https://studio.youtube.com",
+      "category": "content",
+      "note": "Channel analytics"
+    },
+    {
+      "label": "Substack drafts",
+      "url": "https://substack.com",
+      "category": "content",
+      "note": "Newsletter review queue"
+    },
+    {
+      "label": "Vercel",
+      "url": "https://vercel.com",
+      "category": "infra",
+      "note": "Static site hosting"
+    },
+    {
+      "label": "MCP servers list",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "category": "agent",
+      "note": "Connector catalog"
+    }
+  ]
+}

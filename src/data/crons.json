@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "crons": [
+    {
+      "id": "yt-substack-daily",
+      "name": "YouTube → Substack daily",
+      "schedule": "0 8 * * *",
+      "human": "Every day at 08:00",
+      "host": "hermes (cloud)",
+      "agent": "eddo",
+      "skill": "newsletter-drafter",
+      "enabled": true,
+      "lastRun": "2026-09-22T08:00:00Z",
+      "lastStatus": "waiting-review",
+      "artifact": "docs/newsletter-drafts/2026-09-22.md"
+    },
+    {
+      "id": "morning-brief",
+      "name": "Morning brief (calendar + inbox flags)",
+      "schedule": "30 7 * * 1-5",
+      "human": "Weekdays at 07:30",
+      "host": "hermes (cloud)",
+      "agent": "robo",
+      "skill": "morning-brief",
+      "enabled": true,
+      "lastRun": "2026-09-22T07:30:00Z",
+      "lastStatus": "done",
+      "artifact": "docs/briefs/2026-09-22.md"
+    },
+    {
+      "id": "cleanup-weekly",
+      "name": "System cleanup sweep",
+      "schedule": "15 9 * * 0",
+      "human": "Sundays at 09:15",
+      "host": "local",
+      "agent": "devo",
+      "skill": "cleanup",
+      "enabled": true,
+      "lastRun": "2026-09-21T09:15:00Z",
+      "lastStatus": "done",
+      "artifact": "docs/reports/cleanup-2026-09-21.md"
+    },
+    {
+      "id": "community-digest",
+      "name": "Skool community digest",
+      "schedule": "0 18 * * 5",
+      "human": "Fridays at 18:00",
+      "host": "hermes (cloud)",
+      "agent": "como",
+      "skill": "community-digest",
+      "enabled": true,
+      "lastRun": "2026-09-19T18:00:00Z",
+      "lastStatus": "done",
+      "artifact": "docs/digests/2026-09-19.md"
+    },
+    {
+      "id": "analytics-snapshot",
+      "name": "YouTube analytics snapshot",
+      "schedule": "0 */6 * * *",
+      "human": "Every 6 hours",
+      "host": "local",
+      "agent": "asto",
+      "skill": "yt-analytics",
+      "enabled": false,
+      "lastRun": "2026-09-20T12:00:00Z",
+      "lastStatus": "failed",
+      "artifact": null
+    }
+  ]
+}

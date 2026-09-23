@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": [
+    {
+      "id": "robo",
+      "name": "/robo",
+      "level": 2,
+      "description": "Brand & design-system router skill. Thin SKILL.md plus reference files.",
+      "path": "skills/robo/SKILL.md",
+      "refs": ["skills/robo/brand.html", "skills/robo/tone.md", "skills/robo/palette.json"],
+      "triggers": ["make a PDF guide", "on-brand landing page"]
+    },
+    {
+      "id": "cleanup",
+      "name": "/cleanup",
+      "level": 3,
+      "description": "System cleanup: clears agent caches, stale plan files, temp artifacts. Wired to the skills deck for headless runs.",
+      "path": "skills/cleanup/SKILL.md",
+      "refs": [],
+      "triggers": ["weekly cron", "manual from skills deck"]
+    },
+    {
+      "id": "newsletter-drafter",
+      "name": "/newsletter-drafter",
+      "level": 3,
+      "description": "Turns a YouTube transcript into a Substack draft in house tone (~70-80% voice fidelity).",
+      "path": "skills/newsletter-drafter/SKILL.md",
+      "refs": ["skills/newsletter-drafter/tone-samples.md"],
+      "triggers": ["cron 0 8 * * *"]
+    },
+    {
+      "id": "search-connectors",
+      "name": "/search-connectors",
+      "level": 2,
+      "description": "Finds official connectors or community CLIs/APIs/MCPs for a given app, then vets the repo.",
+      "path": "skills/search-connectors/SKILL.md",
+      "refs": ["skills/search-connectors/safety-checklist.md"],
+      "triggers": ["manual"]
+    },
+    {
+      "id": "morning-brief",
+      "name": "/morning-brief",
+      "level": 3,
+      "description": "Calendar + inbox triage brief. Flags messages needing human attention.",
+      "path": "skills/morning-brief/SKILL.md",
+      "refs": [],
+      "triggers": ["cron 30 7 * * 1-5"]
+    },
+    {
+      "id": "yt-analytics",
+      "name": "/yt-analytics",
+      "level": 1,
+      "description": "Pulls channel analytics snapshot into a markdown report.",
+      "path": "skills/yt-analytics/SKILL.md",
+      "refs": [],
+      "triggers": ["manual"]
+    }
+  ]
+}

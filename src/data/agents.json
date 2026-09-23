@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "updated": "2026-09-22T09:00:00Z",
+  "agents": [
+    {
+      "id": "robo",
+      "name": "Robo",
+      "role": "Chief of staff / orchestrator",
+      "model": "claude-opus-5",
+      "status": "active",
+      "lastTask": "Compiled morning brief and triaged inbox flags",
+      "lastActive": "2026-09-22T08:52:11Z"
+    },
+    {
+      "id": "devo",
+      "name": "Devo",
+      "role": "Engineering agent",
+      "model": "claude-sonnet-5",
+      "status": "active",
+      "lastTask": "Refactored flows panel renderer",
+      "lastActive": "2026-09-22T08:47:03Z"
+    },
+    {
+      "id": "eddo",
+      "name": "Eddo",
+      "role": "Content & editorial agent",
+      "model": "claude-sonnet-5",
+      "status": "idle",
+      "lastTask": "Drafted Substack issue from YT upload",
+      "lastActive": "2026-09-22T08:00:00Z"
+    },
+    {
+      "id": "bizo",
+      "name": "Bizo",
+      "role": "Sales / client ops agent",
+      "model": "gpt-5.2",
+      "status": "idle",
+      "lastTask": "Prepared Beto Green dashboard mockup",
+      "lastActive": "2026-09-21T17:22:40Z"
+    },
+    {
+      "id": "como",
+      "name": "Como",
+      "role": "Community agent (Skool)",
+      "model": "claude-haiku-5",
+      "status": "running",
+      "lastTask": "Answering member questions, digest queued",
+      "lastActive": "2026-09-22T09:01:44Z"
+    },
+    {
+      "id": "asto",
+      "name": "Asto",
+      "role": "Research assistant",
+      "model": "claude-opus-5",
+      "status": "offline",
+      "lastTask": "Landscape scan: agent sandbox platforms",
+      "lastActive": "2026-09-20T14:10:09Z"
+    }
+  ]
+}

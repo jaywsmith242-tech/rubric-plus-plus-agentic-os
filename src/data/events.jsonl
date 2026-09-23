@@ -1,0 +1,5 @@
+{"ts":"2026-09-22T07:30:00Z","actor":"robo","panel":"crons","action":"routine-fired","payload":{"cron":"morning-brief","status":"done"}}
+{"ts":"2026-09-22T07:41:00Z","actor":"devo","panel":"generations","action":"append","payload":{"id":"gen-1042","type":"image","model":"gpt-image-2"}}
+{"ts":"2026-09-22T08:00:00Z","actor":"eddo","panel":"flows","action":"run-started","payload":{"flow":"yt-to-substack","run":"run-2026-09-22-0800"}}
+{"ts":"2026-09-22T08:07:31Z","actor":"eddo","panel":"flows","action":"step-event","payload":{"flow":"yt-to-substack","step":"review","status":"waiting"}}
+{"ts":"2026-09-22T08:52:11Z","actor":"robo","panel":"agents","action":"status","payload":{"id":"robo","status":"active"}}

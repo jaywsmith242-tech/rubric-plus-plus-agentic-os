@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "generations": [
+    { "id": "gen-1042", "type": "image", "prompt": "Pixel-art hero banner: agent command centre at night, orange accents", "model": "gpt-image-2", "skill": "gpt-image-2-skill", "seed": 918273, "ts": "2026-09-22T07:41:00Z", "asset": "assets/gen-1042.png" },
+    { "id": "gen-1041", "type": "video", "prompt": "Floating desktop screens over hexagonal grid, slow orbit", "model": "seedance-2.0", "skill": "seedance-skill", "seed": 551201, "ts": "2026-09-21T16:33:00Z", "asset": "assets/gen-1041.mp4" },
+    { "id": "gen-1040", "type": "image", "prompt": "Beto Green dashboard mockup — dark theme, leaf-green accent", "model": "gpt-image-2", "skill": "html-it", "seed": 120045, "ts": "2026-09-21T16:12:00Z", "asset": "assets/gen-1040.png" },
+    { "id": "gen-1039", "type": "image", "prompt": "Thumbnail: 'NEW Agentic OS standard' — hex logo, bold Doto type", "model": "gpt-image-2", "skill": "fantastic-posters", "seed": 773421, "ts": "2026-09-20T11:05:00Z", "asset": "assets/gen-1039.png" },
+    { "id": "gen-1038", "type": "video", "prompt": "B-roll: dot-matrix wave resolving into the RUBRIC wordmark", "model": "seedance-2.0", "skill": "seedance-skill", "seed": 664102, "ts": "2026-09-19T15:48:00Z", "asset": "assets/gen-1038.mp4" },
+    { "id": "gen-1037", "type": "image", "prompt": "ARMS framework diagram — four arms around a cube core", "model": "excalidraw", "skill": "excalidraw-skill", "seed": 310987, "ts": "2026-09-18T09:22:00Z", "asset": "assets/gen-1037.svg" },
+    { "id": "gen-1036", "type": "image", "prompt": "Client THRO pitch deck cover, warm minimal", "model": "gpt-image-2", "skill": "html-it", "seed": 845012, "ts": "2026-08-05T10:14:00Z", "asset": "assets/gen-1036.png" },
+    { "id": "gen-1035", "type": "image", "prompt": "Skool community banner — pixel agents in a row", "model": "gpt-image-2", "skill": "fantastic-posters", "seed": 402988, "ts": "2026-08-02T13:37:00Z", "asset": "assets/gen-1035.png" }
+  ]
+}

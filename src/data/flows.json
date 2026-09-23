@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "flows": [
+    {
+      "id": "yt-to-substack",
+      "name": "YouTube → Substack newsletter",
+      "trigger": "cron: 0 8 * * * (host: hermes)",
+      "steps": [
+        { "id": "fetch",   "label": "Fetch new channel videos", "agent": "eddo" },
+        { "id": "transcribe", "label": "Pull transcript", "agent": "eddo" },
+        { "id": "outline", "label": "Outline in house tone", "agent": "eddo" },
+        { "id": "draft",   "label": "Draft newsletter (/robo tone refs)", "agent": "eddo" },
+        { "id": "review",  "label": "Human review gate", "agent": "human" }
+      ],
+      "runs": [
+        {
+          "id": "run-2026-09-22-0800",
+          "started": "2026-09-22T08:00:00Z",
+          "events": [
+            { "step": "fetch",      "status": "done",  "ts": "2026-09-22T08:00:41Z", "note": "1 new video found" },
+            { "step": "transcribe", "status": "done",  "ts": "2026-09-22T08:02:10Z", "note": "1,842 words" },
+            { "step": "outline",    "status": "done",  "ts": "2026-09-22T08:03:55Z", "note": "5 sections" },
+            { "step": "draft",      "status": "done",  "ts": "2026-09-22T08:07:31Z", "note": "tone confidence 78%" },
+            { "step": "review",     "status": "waiting", "ts": "2026-09-22T08:07:31Z", "note": "awaiting human edit" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "client-dashboard-mockup",
+      "name": "Client dashboard mockup (Beto Green)",
+      "trigger": "manual",
+      "steps": [
+        { "id": "brief",  "label": "Read client brief", "agent": "bizo" },
+        { "id": "brand",  "label": "Load brand refs (/robo)", "agent": "bizo" },
+        { "id": "scaffold", "label": "Clone rubric-plus scaffold", "agent": "devo" },
+        { "id": "theme",  "label": "Apply client theme tokens", "agent": "devo" },
+        { "id": "ship",   "label": "Package + send preview link", "agent": "bizo" }
+      ],
+      "runs": [
+        {
+          "id": "run-2026-09-21-1600",
+          "started": "2026-09-21T16:00:00Z",
+          "events": [
+            { "step": "brief",    "status": "done",   "ts": "2026-09-21T16:02:00Z" },
+            { "step": "brand",    "status": "done",   "ts": "2026-09-21T16:05:12Z" },
+            { "step": "scaffold", "status": "done",   "ts": "2026-09-21T16:09:44Z" },
+            { "step": "theme",    "status": "failed", "ts": "2026-09-21T16:11:03Z", "note": "contrast check failed on accent" },
+            { "step": "theme",    "status": "done",   "ts": "2026-09-21T16:18:27Z", "note": "accent darkened to #e05a10" },
+            { "step": "ship",     "status": "done",   "ts": "2026-09-21T16:21:50Z" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "nodes": [
+    { "id": "CLAUDE.md", "type": "router", "label": "CLAUDE.md" },
+    { "id": "content.md", "type": "router", "label": "content.md" },
+    { "id": "community.md", "type": "router", "label": "community.md" },
+    { "id": "clients.md", "type": "router", "label": "clients.md" },
+    { "id": "skills/robo", "type": "skill", "label": "/robo" },
+    { "id": "skills/cleanup", "type": "skill", "label": "/cleanup" },
+    { "id": "skills/newsletter-drafter", "type": "skill", "label": "/newsletter-drafter" },
+    { "id": "skills/search-connectors", "type": "skill", "label": "/search-connectors" },
+    { "id": "skills/morning-brief", "type": "skill", "label": "/morning-brief" },
+    { "id": "skills/yt-analytics", "type": "skill", "label": "/yt-analytics" },
+    { "id": "docs/arms-framework.md", "type": "doc", "label": "arms-framework.md" },
+    { "id": "docs/panel-contracts.md", "type": "doc", "label": "panel-contracts.md" },
+    { "id": "docs/getting-started.md", "type": "doc", "label": "getting-started.md" },
+    { "id": "data/crons.json", "type": "data", "label": "crons.json" },
+    { "id": "data/generations.json", "type": "data", "label": "generations.json" },
+    { "id": "data/sprints.md", "type": "data", "label": "sprints.md" }
+  ],
+  "edges": [
+    ["CLAUDE.md", "content.md"],
+    ["CLAUDE.md", "community.md"],
+    ["CLAUDE.md", "clients.md"],
+    ["CLAUDE.md", "data/sprints.md"],
+    ["content.md", "skills/robo"],
+    ["content.md", "skills/newsletter-drafter"],
+    ["content.md", "skills/yt-analytics"],
+    ["content.md", "data/generations.json"],
+    ["community.md", "skills/morning-brief"],
+    ["clients.md", "skills/search-connectors"],
+    ["CLAUDE.md", "skills/cleanup"],
+    ["CLAUDE.md", "docs/arms-framework.md"],
+    ["CLAUDE.md", "docs/panel-contracts.md"],
+    ["docs/getting-started.md", "docs/panel-contracts.md"],
+    ["skills/cleanup", "data/crons.json"],
+    ["skills/newsletter-drafter", "data/crons.json"],
+    ["skills/morning-brief", "data/crons.json"]
+  ]
+}
